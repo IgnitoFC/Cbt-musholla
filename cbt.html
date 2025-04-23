@@ -1,0 +1,221 @@
+04.24 01.06
+cbt.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT Musholla Nurul Ikhwan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #343a40;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 1.2em;
+      margin: 0;
+    }
+    #timer {
+      font-weight: bold;
+    }
+    .container {
+      display: flex;
+      height: calc(100vh - 60px);
+    }
+    .sidebar {
+      width: 200px;
+      background: #ffffff;
+      border-right: 1px solid #ccc;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .sidebar button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: white;
+      border: 1px solid #999;
+    }
+    .sidebar button.answered {
+      background-color: #28a745;
+      color: white;
+    }
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .soal {
+      display: none;
+    }
+    .soal.active {
+      display: block;
+    }
+    button.nav {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button.nav:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CBT Musholla Nurul Ikhwan</h1>
+    <div id="timer">00:00:00</div>
+    <button onclick="logout()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 5px;">Logout</button>
+  </header>
+  <div class="container">
+    <div class="sidebar" id="daftarSoal">
+      <h3>Daftar Soal</h3>
+    </div>
+    <div class="content" id="areaSoal">
+      <form id="formSoal">
+<!-- Contoh soal, bisa ditambah lebih banyak -->
+        <div class="soal active" id="soal1">
+          <p><b>1. Siapakah Nabi terakhir dalam Islam?</b></p>
+          <label><input type="radio" name="soal1" value="A"> Nabi Musa</label><br>
+          <label><input type="radio" name="soal1" value="B"> Nabi Isa</label><br>
+          <label><input type="radio" name="soal1" value="C"> Nabi Ibrahim</label><br>
+          <label><input type="radio" name="soal1" value="D"> Nabi Muhammad</label>
+        </div>
+
+        <div class="soal" id="soal2">
+          <p><b>2. Rukun Islam yang pertama adalah...</b></p>
+          <label><input type="radio" name="soal2" value="A"> Salat</label><br>
+          <label><input type="radio" name="soal2" value="B"> Puasa</label><br>
+          <label><input type="radio" name="soal2" value="C"> Syahadat</label><br>
+          <label><input type="radio" name="soal2" value="D"> Zakat</label>
+        </div>
+
+        <!-- Tambahkan soal lainnya di sini -->
+
+        <div style="margin-top: 20px;">
+          <button type="button" class="nav" onclick="prevSoal()">Sebelumnya</button>
+          <button type="button" class="nav" onclick="nextSoal()">Selanjutnya</button>
+          <button type="submit" class="nav" style="background: green;">Kumpulkan</button>
+        </div>
+      </form>
+      <div id="hasil" style="margin-top: 20px; font-weight: bold;"></div>
+    </div>
+  </div>
+<form id="quizForm">
+  <!-- SOAL PILIHAN GANDA (1-10) -->
+  <div class="soal active" id="soal1">
+    <p><b>1. Siapakah Nabi terakhir dalam Islam?</b></p>
+    <label><input type="radio" name="soal1" value="A"> Nabi Musa</label><br>
+    <label><input type="radio" name="soal1" value="B"> Nabi Isa</label><br>
+    <label><input type="radio" name="soal1" value="C"> Nabi Ibrahim</label><br>
+    <label><input type="radio" name="soal1" value="D"> Nabi Muhammad</label>
+  </div>
+  <div class="soal" id="soal2">
+    <p><b>2. Rukun Islam yang pertama adalah...</b></p>
+    <label><input type="radio" name="soal2" value="A"> Salat</label><br>
+    <label><input type="radio" name="soal2" value="B"> Puasa</label><br>
+    <label><input type="radio" name="soal2" value="C"> Syahadat</label><br>
+    <label><input type="radio" name="soal2" value="D"> Zakat</label>
+  </div>
+  <div class="soal" id="soal3">
+    <p><b>3. Al-Qur'an diturunkan dalam bahasa...</b></p>
+    <label><input type="radio" name="soal3" value="A"> Ibrani</label><br>
+    <label><input type="radio" name="soal3" value="B"> Arab</label><br>
+    <label><input type="radio" name="soal3" value="C"> Persia</label><br>
+    <label><input type="radio" name="soal3" value="D"> Latin</label>
+  </div>
+  <div class="soal" id="soal4">
+    <p><b>4. Jumlah rakaat salat Maghrib adalah...</b></p>
+    <label><input type="radio" name="soal4" value="A"> 2</label><br>
+    <label><input type="radio" name="soal4" value="B"> 3</label><br>
+    <label><input type="radio" name="soal4" value="C"> 4</label><br>
+    <label><input type="radio" name="soal4" value="D"> 5</label>
+  </div>
+  <div class="soal" id="soal5">
+    <p><b>5. Nabi yang bisa menghidupkan orang mati dengan izin Allah adalah...</b></p>
+    <label><input type="radio" name="soal5" value="A"> Nabi Ibrahim</label><br>
+    <label><input type="radio" name="soal5" value="B"> Nabi Musa</label><br>
+    <label><input type="radio" name="soal5" value="C"> Nabi Isa</label><br>
+    <label><input type="radio" name="soal5" value="D"> Nabi Nuh</label>
+  </div>
+  <div class="soal" id="soal6">
+    <p><b>6. Hari raya umat Islam setelah puasa Ramadhan adalah...</b></p>
+    <label><input type="radio" name="soal6" value="A"> Idul Adha</label><br>
+    <label><input type="radio" name="soal6" value="B"> Maulid Nabi</label><br>
+    <label><input type="radio" name="soal6" value="C"> Idul Fitri</label><br>
+    <label><input type="radio" name="soal6" value="D"> Tahun Baru Hijriah</label>
+  </div>
+  <div class="soal" id="soal7">
+    <p><b>7. Malaikat pencatat amal baik adalah...</b></p>
+    <label><input type="radio" name="soal7" value="A"> Malik</label><br>
+    <label><input type="radio" name="soal7" value="B"> Munkar</label><br>
+    <label><input type="radio" name="soal7" value="C"> Raqib</label><br>
+    <label><input type="radio" name="soal7" value="D"> Nakir</label>
+  </div>
+  <div class="soal" id="soal8">
+    <p><b>8. Kitab Zabur diturunkan kepada Nabi...</b></p>
+    <label><input type="radio" name="soal8" value="A"> Musa</label><br>
+    <label><input type="radio" name="soal8" value="B"> Isa</label><br>
+    <label><input type="radio" name="soal8" value="C"> Muhammad</label><br>
+    <label><input type="radio" name="soal8" value="D"> Daud</label>
+  </div>
+  <div class="soal" id="soal9">
+    <p><b>9. Waktu salat Subuh dimulai dari...</b></p>
+    <label><input type="radio" name="soal9" value="A"> Terbit matahari</label><br>
+    <label><input type="radio" name="soal9" value="B"> Fajar</label><br>
+    <label><input type="radio" name="soal9" value="C"> Dzuhur</label><br>
+    <label><input type="radio" name="soal9" value="D"> Tengah malam</label>
+  </div>
+  <div class="soal" id="soal10">
+    <p><b>10. Ibadah puasa dilakukan pada bulan...</b></p>
+    <label><input type="radio" name="soal10" value="A"> Syawal</label><br>
+    <label><input type="radio" name="soal10" value="B"> Rajab</label><br>
+    <label><input type="radio" name="soal10" value="C"> Dzulhijjah</label><br>
+    <label><input type="radio" name="soal10" value="D"> Ramadhan</label>
+  </div>
+
+  <!-- SOAL PGK (11-15) -->
+  <div class="soal" id="soal11">
+    <p><b>11. Salah satu sikap jujur adalah...</b></p>
+    <label><input type="radio" name="soal11" value="A"> Berbohong agar teman senang</label><br>
+    <label><input type="radio" name="soal11" value="B"> Mengakui kesalahan</label><br>
+    <label><input type="radio" name="soal11" value="C"> Menyontek saat ujian</label><br>
+    <label><input type="radio" name="soal11" value="D"> Mencuri karena lapar</label>
+  </div>
+  <div class="soal" id="soal12">
+    <p><b>12. Menolong teman yang jatuh adalah sikap...</b></p>
+    <label><input type="radio" name="soal12" value="A"> Egois</label><br>
+    <label><input type="radio" name="soal12" value="B"> Sombong</label><br>
+    <label><input type="radio" name="soal12" value="C"> Peduli</label><br>
+    <label><input type="radio" name="soal12" value="D"> Takut</label>
+  </div>
+  <div class="soal" id="soal13">
+    <p><b>13. Sikap tawadhu artinya...</b></p>
+    <label><input type="radio" name="soal13" value="A"> Rendah hati</label><br>
+    <label><input type="radio" name="soal13" value="B"> Rendah diri</label><br>
+    <label><input type="radio" name="soal13" value="C"> Sombong</label><br>
+    <label><input type="radio" name="soal13" value="D"> Pelit</label>
+  </div>
+  <div class="soal" id="soal14">
+    <p><b>14. Rajin belajar termasuk sikap...</b></p>
+    <label><input type="radio" name="soal14" value="A"> Disiplin</label><br>
+    <label><input type="radio" name="soal14" value="B"> Malas</label><br>
+
