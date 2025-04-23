@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Token Panitia - CBT Musholla Nurul Ikhwan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .box {
+      background: #1f1f1f;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+    .token {
+      font-size: 2em;
+      margin-top: 10px;
+      color: #00ffcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Token Panitia Aktif Saat Ini</h2>
+    <div class="token" id="tokenNow">Memuat...</div>
+    <p style="color:gray; font-size: 0.9em;">Token ini otomatis berubah setiap 10 menit.</p>
+  </div>
+
+  <script>
+    function getToken() {
+      const waktu = Math.floor(Date.now() / 600000); // 10 menit
+      return btoa("IKHWAN" + waktu).substring(0, 6).toUpperCase();
+    }
+
+    function tampilkanToken() {
+      const elemen = document.getElementById("tokenNow");
+      elemen.textContent = getToken();
+    }
+
+    tampilkanToken();
+    setInterval(tampilkanToken, 10000); // Update tampilan tiap 10 detik
+  </script>
+</body>
+</html>
