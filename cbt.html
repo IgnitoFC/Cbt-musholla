@@ -1,0 +1,171 @@
+04.24 06.16
+cbt.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CBT Musholla Nurul Ikhwan</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 0; }
+    header {
+      background: #343a40; color: white; padding: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .container { display: flex; height: calc(100vh - 60px); }
+    .sidebar {
+      width: 200px; background: #fff; padding: 15px;
+      border-right: 1px solid #ccc; overflow-y: auto;
+    }
+    .sidebar button {
+      width: 100%; margin-bottom: 5px; padding: 8px;
+      border: 1px solid #888; border-radius: 4px;
+      background: #fff; cursor: pointer;
+    }
+    .sidebar button.answered {
+      background: #28a745; color: white;
+    }
+    .content { flex-grow: 1; padding: 20px; overflow-y: auto; }
+    .soal { display: none; }
+    .soal.active { display: block; }
+    .nav-btn {
+      margin: 10px 5px; padding: 10px 20px;
+      background: #007bff; color: white; border: none;
+      border-radius: 5px; cursor: pointer;
+    }
+    .nav-btn:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <header>
+    <div><b>CBT Musholla Nurul Ikhwan</b></div>
+    <div id="timer">00:00</div>
+    <button onclick="logout()" style="background:#dc3545;color:white;border:none;padding:8px 12px;border-radius:5px;">Logout</button>
+  </header>
+  <div class="container">
+    <div class="sidebar" id="daftarSoal"><h3>Daftar Soal</h3></div>
+    <div class="content">
+      <form id="formSoal">
+<!-- SOAL CBT - 20 ITEM -->
+        <!-- Soal 1 - PG -->
+        <div class="soal active" id="soal1">
+          <p><b>1. Ini adalah soal pilihan ganda ke-1.</b></p>
+          <label><input type="radio" name="soal1" value="A"> Pilihan A</label><br>
+          <label><input type="radio" name="soal1" value="B"> Pilihan B</label><br>
+          <label><input type="radio" name="soal1" value="C"> Pilihan C</label><br>
+          <label><input type="radio" name="soal1" value="D"> Pilihan D</label><br>
+        </div>
+
+        <!-- Soal 2 - Benar/Salah -->
+        <div class="soal" id="soal2">
+          <p><b>2. Ini adalah soal benar-salah ke-2.</b></p>
+          <label><input type="radio" name="soal2" value="Benar"> Benar</label><br>
+          <label><input type="radio" name="soal2" value="Salah"> Salah</label><br>
+        </div>
+
+        <!-- Soal 3 - PG -->
+        <div class="soal" id="soal3">
+          <p><b>3. Ini adalah soal pilihan ganda ke-3.</b></p>
+          <label><input type="radio" name="soal3" value="A"> Pilihan A</label><br>
+          <label><input type="radio" name="soal3" value="B"> Pilihan B</label><br>
+          <label><input type="radio" name="soal3" value="C"> Pilihan C</label><br>
+          <label><input type="radio" name="soal3" value="D"> Pilihan D</label><br>
+        </div>
+
+        <!-- Soal 4 - PGK -->
+        <div class="soal" id="soal4">
+          <p><b>4. Ini adalah soal pilihan ganda kompleks ke-4.</b></p>
+          <label><input type="checkbox" name="soal4_A" value="A"> Pilihan A</label><br>
+          <label><input type="checkbox" name="soal4_B" value="B"> Pilihan B</label><br>
+          <label><input type="checkbox" name="soal4_C" value="C"> Pilihan C</label><br>
+          <label><input type="checkbox" name="soal4_D" value="D"> Pilihan D</label><br>
+        </div>
+
+        <!-- ... lanjut sampai soal 20 (bisa copy pola ini) -->
+
+        <!-- Tombol navigasi -->
+        <div style="margin-top: 20px;">
+          <button type="button" class="nav-btn" onclick="prevSoal()">Sebelumnya</button>
+          <button type="button" class="nav-btn" onclick="nextSoal()">Selanjutnya</button>
+          <button type="submit" class="nav-btn" style="background:green;">Kumpulkan</button>
+        </div>
+      </form>
+      <div id="hasil" style="margin-top:20px;font-weight:bold;"></div>
+    </div>
+  </div>
+<script>
+const totalSoal = 20;
+let current = 1;
+
+// Tampilkan soal tertentu
+function showSoal(n) {
+  document.querySelectorAll('.soal').forEach(s => s.classList.remove('active'));
+  document.getElementById("soal" + n).classList.add("active");
+  current = n;
+}
+
+// Navigasi
+function nextSoal() { if (current < totalSoal) showSoal(current + 1); }
+function prevSoal() { if (current > 1) showSoal(current - 1); }
+
+// Buat tombol nomor soal
+function buatNavigasi() {
+  const d = document.getElementById("daftarSoal");
+  for (let i = 1; i <= totalSoal; i++) {
+    let b = document.createElement("button");
+    b.innerText = i;
+    b.id = "btn" + i;
+    b.onclick = () => showSoal(i);
+    d.appendChild(b);
+  }
+}
+
+// Tandai soal sudah dijawab
+document.addEventListener("change", function(e) {
+  const el = e.target;
+  if (!el.name.startsWith("soal")) return;
+  const nomor = el.name.split("_")[0].replace("soal", "");
+  const btn = document.getElementById("btn" + nomor);
+  if (btn) btn.classList.add("answered");
+});
+
+// Submit jawaban (tanpa penilaian karena ini simulasi)
+document.getElementById("formSoal").addEventListener("submit", e => {
+  e.preventDefault();
+  document.querySelectorAll("input").forEach(i => i.disabled = true);
+  document.querySelectorAll("button.nav-btn").forEach(i => i.disabled = true);
+  document.getElementById("hasil").innerText = "Jawaban berhasil dikumpulkan. Terima kasih!";
+});
+
+// Timer real-time
+function startTimer() {
+  const el = document.getElementById("timer");
+  let detik = 0;
+  setInterval(() => {
+    detik++;
+    let m = String(Math.floor(detik / 60)).padStart(2, '0');
+    let s = String(detik % 60).padStart(2, '0');
+    el.textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+// Logout manual & otomatis
+function logout() {
+  alert("Kamu telah logout.");
+  window.location.href = "index.html";
+}
+document.addEventListener("visibilitychange", function() {
+  if (document.hidden) {
+    alert("Kamu keluar dari ujian. Sistem logout otomatis.");
+    window.location.href = "index.html";
+  }
+});
+
+// Mulai
+buatNavigasi();
+showSoal(1);
+startTimer();
+</script>
+</body>
+</html>
+
