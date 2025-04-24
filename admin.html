@@ -1,0 +1,227 @@
+04.24 21.33
+admin.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin CBT Multi Mapel</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+    h2 { text-align: center; }
+    .box {
+      background: white; padding: 20px; margin: 20px auto; border-radius: 10px;
+      max-width: 900px; box-shadow: 0 0 10px #ccc;
+    }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, select, textarea, button {
+      width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background: #007bff; color: white; }
+    .edit { background: orange; color: white; }
+    .delete { background: red; color: white; }
+  </style>
+</head>
+<body>
+  <h2>Dashboard Admin CBT Multi Mapel</h2>
+
+  <div class="box">
+    <h3>Kelola Mapel</h3>
+    <input type="text" id="namaMapelBaru" placeholder="Nama Mapel Baru" />
+    <button onclick="tambahMapel()">Tambah Mapel</button>
+    <select id="mapelSelect" onchange="muatSemua()"></select>
+  </div>
+
+  <div class="box">
+    <h3>Kelola Soal</h3>
+    <input type="number" id="nomor" placeholder="Nomor Soal" />
+    <textarea id="pertanyaan" placeholder="Pertanyaan"></textarea>
+    <input type="text" id="opsiA" placeholder="Opsi A" />
+    <input type="text" id="opsiB" placeholder="Opsi B" />
+    <input type="text" id="opsiC" placeholder="Opsi C" />
+    <input type="text" id="opsiD" placeholder="Opsi D" />
+    <select id="tipe">
+      <option value="pg">Pilihan Ganda</option>
+      <option value="pgk">PG Kompleks</option>
+      <option value="bs">Benar/Salah</option>
+    </select>
+    <input type="text" id="kunci" placeholder="Kunci (contoh: A atau A,B)" />
+    <button onclick="simpanSoal()">Simpan Soal</button>
+    <table id="tabelSoal"><thead><tr><th>No</th><th>Pertanyaan</th><th>Kunci</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="box">
+    <h3>Kelola Akun Peserta</h3>
+    <input type="text" id="usernameBaru" placeholder="Username" />
+    <input type="password" id="passwordBaru" placeholder="Password" />
+    <button onclick="tambahAkun()">Tambah Akun</button>
+    <table id="tabelAkun"><thead><tr><th>Username</th><th>Password</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="box">
+    <h3>Pengaturan Token & Waktu Ujian</h3>
+    <input type="text" id="token" placeholder="Token Aktif" />
+    <input type="datetime-local" id="mulai" />
+    <input type="datetime-local" id="selesai" />
+    <button onclick="simpanPengaturan()">Simpan Pengaturan</button>
+  </div>
+
+  <div class="box">
+    <h3>Nilai Peserta</h3>
+    <table id="tabelNilai"><thead><tr><th>No</th><th>Username</th><th>Nilai</th><th>Waktu</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+      authDomain: "cbt-musholla.firebaseapp.com",
+      projectId: "cbt-musholla",
+      storageBucket: "cbt-musholla.appspot.com",
+      messagingSenderId: "1012621765788",
+      appId: "1:1012621765788:web:86ef7078db1811847d1159"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function mapelAktif() {
+      return document.getElementById("mapelSelect").value;
+    }
+
+    async function tambahMapel() {
+      const nama = document.getElementById("namaMapelBaru").value;
+      if (!nama) return alert("Isi nama mapel!");
+      await db.collection("mapel").doc(nama.toLowerCase()).set({ nama });
+      alert("Mapel ditambahkan!");
+      muatMapel();
+    }
+
+    function simpanSoal() {
+      const m = mapelAktif();
+      const nomor = document.getElementById("nomor").value;
+      const pertanyaan = document.getElementById("pertanyaan").value;
+      const opsi = {
+        A: document.getElementById("opsiA").value,
+        B: document.getElementById("opsiB").value,
+        C: document.getElementById("opsiC").value,
+        D: document.getElementById("opsiD").value
+      };
+      const tipe = document.getElementById("tipe").value;
+      const kunciRaw = document.getElementById("kunci").value.toUpperCase();
+      const kunci = tipe === "pgk" ? kunciRaw.split(",") : kunciRaw;
+
+      db.collection("soal_" + m).doc(nomor).set({ nomor, pertanyaan, opsi, tipe, kunci }).then(() => {
+        alert("Soal disimpan!"); muatSoal();
+      });
+    }
+
+    function simpanPengaturan() {
+      const m = mapelAktif();
+      const token = document.getElementById("token").value;
+      const mulai = document.getElementById("mulai").value;
+      const selesai = document.getElementById("selesai").value;
+
+      db.collection("pengaturan_" + m).doc("token").set({ token });
+      db.collection("pengaturan_" + m).doc("waktuUjian").set({ mulai, selesai });
+      alert("Pengaturan disimpan!");
+    }
+
+    function tambahAkun() {
+      const u = document.getElementById("usernameBaru").value;
+      const p = document.getElementById("passwordBaru").value;
+      db.collection("akun").doc(u).set({ password: p }).then(() => {
+        alert("Akun ditambahkan!");
+        muatAkun();
+      });
+    }
+
+    function hapusAkun(username) {
+      if (confirm("Hapus akun " + username + "?")) {
+        db.collection("akun").doc(username).delete().then(muatAkun);
+      }
+    }
+
+    function hapusSoal(nomor) {
+      const m = mapelAktif();
+      if (confirm("Hapus soal nomor " + nomor + "?")) {
+        db.collection("soal_" + m).doc(nomor).delete().then(muatSoal);
+      }
+    }
+
+    function muatMapel() {
+      const select = document.getElementById("mapelSelect");
+      select.innerHTML = "";
+      db.collection("mapel").get().then(snap => {
+        snap.forEach(doc => {
+          select.innerHTML += `<option value="${doc.id}">${doc.data().nama}</option>`;
+        });
+        muatSemua();
+      });
+    }
+
+    function muatSoal() {
+      const m = mapelAktif();
+      const tbody = document.querySelector("#tabelSoal tbody");
+      tbody.innerHTML = "";
+      db.collection("soal_" + m).orderBy("nomor").get().then(snap => {
+        snap.forEach(doc => {
+          const d = doc.data();
+          tbody.innerHTML += `
+            <tr>
+              <td>${d.nomor}</td>
+              <td>${d.pertanyaan}</td>
+              <td>${Array.isArray(d.kunci) ? d.kunci.join(", ") : d.kunci}</td>
+              <td><button class="delete" onclick="hapusSoal('${d.nomor}')">Hapus</button></td>
+            </tr>`;
+        });
+      });
+    }
+
+    function muatAkun() {
+      const tbody = document.querySelector("#tabelAkun tbody");
+      tbody.innerHTML = "";
+      db.collection("akun").get().then(snap => {
+        snap.forEach(doc => {
+          const d = doc.data();
+          tbody.innerHTML += `
+            <tr>
+              <td>${doc.id}</td>
+              <td>${d.password}</td>
+              <td><button class="delete" onclick="hapusAkun('${doc.id}')">Hapus</button></td>
+            </tr>`;
+        });
+      });
+    }
+
+    function muatNilai() {
+      const m = mapelAktif();
+      const tbody = document.querySelector("#tabelNilai tbody");
+      tbody.innerHTML = "";
+      db.collection("nilai_" + m).orderBy("waktu", "desc").get().then(snap => {
+        let i = 1;
+        snap.forEach(doc => {
+          const d = doc.data();
+          tbody.innerHTML += `
+            <tr>
+              <td>${i++}</td>
+              <td>${d.username}</td>
+              <td>${d.nilai}</td>
+              <td>${new Date(d.waktu).toLocaleString("id-ID")}</td>
+            </tr>`;
+        });
+      });
+    }
+
+    function muatSemua() {
+      muatSoal();
+      muatAkun();
+      muatNilai();
+    }
+
+    window.onload = muatMapel;
+  </script>
+</body>
+</html>
