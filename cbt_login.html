@@ -1,4 +1,5 @@
-
+04.24 09.37
+cbt_login.html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -23,10 +24,9 @@
     <p id="pesan" style="color: red;"></p>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
       authDomain: "cbt-musholla.firebaseapp.com",
@@ -35,18 +35,16 @@
       messagingSenderId: "1012621765788",
       appId: "1:1012621765788:web:86ef7078db1811847d1159"
     };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     async function cekLogin() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
-      const akunRef = collection(db, "akun");
-      const akunSnap = await getDocs(akunRef);
+      const akunRef = db.collection("akun");
+      const snapshot = await akunRef.get();
       let valid = false;
-
-      akunSnap.forEach(doc => {
+      snapshot.forEach(doc => {
         const data = doc.data();
         if (data.username === username && data.password === password) {
           valid = true;
@@ -54,7 +52,6 @@
           window.location.href = "token.html";
         }
       });
-
       if (!valid) {
         document.getElementById("pesan").innerText = "Login gagal! Username atau password salah.";
       }
