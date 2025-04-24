@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Tambah Soal Lengkap</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+      authDomain: "cbt-musholla.firebaseapp.com",
+      projectId: "cbt-musholla",
+      storageBucket: "cbt-musholla.firebasestorage.app",
+      messagingSenderId: "1012621765788",
+      appId: "1:1012621765788:web:86ef7078db1811847d1159"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function tambahSoal() {
+      const nomor = document.getElementById("nomor").value;
+      const pertanyaan = document.getElementById("pertanyaan").value;
+      const opsi = {
+        A: document.getElementById("opsiA").value,
+        B: document.getElementById("opsiB").value,
+        C: document.getElementById("opsiC").value,
+        D: document.getElementById("opsiD").value
+      };
+      const kunci = document.getElementById("kunci").value;
+
+      if (!nomor || !pertanyaan || !opsi.A || !opsi.B || !opsi.C || !opsi.D || !kunci) {
+        alert("Semua data wajib diisi!");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "soal"), {
+          nomor: Number(nomor),
+          pertanyaan,
+          opsi,
+          kunci
+        });
+        alert("Soal berhasil ditambahkan!");
+        document.getElementById("form").reset();
+      } catch (e) {
+        alert("Gagal menambahkan soal: " + e);
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Admin - Tambah Soal Lengkap</h1>
+  <form id="form" onsubmit="event.preventDefault(); tambahSoal();">
+    <label>Nomor Soal:</label>
+    <input type="number" id="nomor" required>
+
+    <label>Pertanyaan:</label>
+    <textarea id="pertanyaan" required></textarea>
+
+    <label>Opsi A:</label>
+    <input type="text" id="opsiA" required>
+    <label>Opsi B:</label>
+    <input type="text" id="opsiB" required>
+    <label>Opsi C:</label>
+    <input type="text" id="opsiC" required>
+    <label>Opsi D:</label>
+    <input type="text" id="opsiD" required>
+
+    <label>Kunci Jawaban (A/B/C/D):</label>
+    <select id="kunci" required>
+      <option value="">--Pilih--</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+    </select>
+
+    <button type="submit">Tambah Soal</button>
+  </form>
+</body>
+</html>
