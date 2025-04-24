@@ -1,0 +1,63 @@
+04.24 11.12
+login.html
+!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Peserta CBT</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 40px; }
+    .box { background: #2a2a2a; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 0 15px rgba(0,255,150,0.2); }
+    input, button {
+      display: block; width: 100%; margin: 10px 0; padding: 10px;
+      font-size: 16px; border-radius: 5px; border: none;
+    }
+    input { background: #f5f5f5; color: black; }
+    button { background: #00cc99; color: white; cursor: pointer; }
+    button:hover { background: #009977; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Login Peserta CBT</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Masuk</button>
+    <p id="pesan" style="color: red;"></p>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+      authDomain: "cbt-musholla.firebaseapp.com",
+      projectId: "cbt-musholla",
+      storageBucket: "cbt-musholla.firebasestorage.app",
+      messagingSenderId: "1012621765788",
+      appId: "1:1012621765788:web:86ef7078db1811847d1159"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function login() {
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value.trim();
+      const snap = await db.collection("akun").get();
+      let sukses = false;
+      snap.forEach(doc => {
+        const data = doc.data();
+        if (data.username === u && data.password === p) {
+          sukses = true;
+          localStorage.setItem("cbt_user", data.username);
+        }
+      });
+      if (sukses) {
+        window.location.href = "token.html";
+      } else {
+        document.getElementById("pesan").innerText = "Username atau password salah!";
+      }
+    }
+  </script>
+</body>
