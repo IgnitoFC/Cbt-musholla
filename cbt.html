@@ -1,0 +1,129 @@
+04.24 13.21
+cbt.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT Peserta</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; }
+    header, footer { background: #333; color: white; padding: 10px; text-align: center; }
+    .container { padding: 20px; max-width: 900px; margin: auto; }
+    .question-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; margin-bottom: 20px; }
+    .nav-buttons { margin-bottom: 20px; text-align: center; }
+    .nav-buttons button {
+      margin: 3px; padding: 10px 15px; border: none; border-radius: 6px;
+      cursor: pointer; font-weight: bold;
+    }
+    .not-answered { background: white; color: black; }
+    .answered { background: #28a745; color: white; }
+    button.submit-btn { background: #007bff; color: white; padding: 10px 30px; border-radius: 8px; font-size: 16px; }
+    .timer { font-size: 18px; font-weight: bold; color: red; float: right; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>CBT Musholla Nurul Ikhwan</h2>
+    <span class="timer" id="timer">00:00</span>
+  </header>
+
+  <div class="container">
+    <div class="nav-buttons" id="soalNav"></div>
+    <div id="soalContainer"></div>
+    <div style="text-align: center; margin-top: 20px;">
+      <button class="submit-btn" onclick="submitJawaban()">Kumpulkan Jawaban</button>
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Musholla Nurul Ikhwan</footer>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+      authDomain: "cbt-musholla.firebaseapp.com",
+      projectId: "cbt-musholla",
+      storageBucket: "cbt-musholla.firebasestorage.app",
+      messagingSenderId: "1012621765788",
+      appId: "1:1012621765788:web:86ef7078db1811847d1159"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let soalData = [];
+    let jawaban = {};
+    const container = document.getElementById("soalContainer");
+    const nav = document.getElementById("soalNav");
+
+    function tampilkanSoal() {
+      container.innerHTML = "";
+      soalData.forEach((soal, i) => {
+        const div = document.createElement("div");
+        div.className = "question-box";
+        div.id = `soal-${i}`;
+        let isi = `<h3>Soal ${soal.nomor}: ${soal.pertanyaan}</h3>`;
+        for (const [key, val] of Object.entries(soal.opsi)) {
+          const checked = jawaban[soal.nomor] === key ? "checked" : "";
+          isi += `<label><input type="radio" name="soal${soal.nomor}" value="${key}" ${checked} onchange="simpanJawaban(${soal.nomor}, this.value)"> ${key}. ${val}</label><br>`;
+        }
+        div.innerHTML = isi;
+        container.appendChild(div);
+      });
+    }
+
+    function buatNavigasi() {
+      nav.innerHTML = "";
+      soalData.forEach((s, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = s.nomor;
+        btn.className = jawaban[s.nomor] ? "answered" : "not-answered";
+        btn.onclick = () => document.getElementById(`soal-${i}`).scrollIntoView({ behavior: "smooth" });
+        nav.appendChild(btn);
+      });
+    }
+
+    function simpanJawaban(nomor, pilihan) {
+      jawaban[nomor] = pilihan;
+      buatNavigasi();
+    }
+
+    function submitJawaban() {
+      if (confirm("Kumpulkan jawaban sekarang? Setelah ini tidak bisa diubah!")) {
+        localStorage.setItem("jawaban_submit", JSON.stringify(jawaban));
+        alert("Jawaban berhasil dikumpulkan.");
+        document.querySelectorAll("input").forEach(i => i.disabled = true);
+        document.querySelector(".submit-btn").disabled = true;
+      }
+    }
+
+    async function loadSoal() {
+      const snap = await db.collection("soal").orderBy("nomor").get();
+      soalData = snap.docs.map(d => d.data());
+      tampilkanSoal();
+      buatNavigasi();
+    }
+
+    // Timer Ujian
+    let waktu = 60 * 10; // 10 menit
+    const timerDisplay = document.getElementById("timer");
+    setInterval(() => {
+      const menit = Math.floor(waktu / 60);
+      const detik = waktu % 60;
+      timerDisplay.textContent = `${menit}:${detik.toString().padStart(2, '0')}`;
+      if (waktu > 0) waktu--;
+    }, 1000);
+
+    // Sistem Anti-Curang
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        alert("Kamu keluar dari halaman! Sistem akan logout.");
+        window.location.href = "login.html";
+      }
+    });
+
+    loadSoal();
+  </script>
+</body>
+</html>
