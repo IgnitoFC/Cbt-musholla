@@ -1,0 +1,140 @@
+04.24 08.17
+admin.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin CBT Musholla</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 20px; }
+    h1 { color: #333; }
+    section { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    input, textarea, select, button {
+      display: block; margin: 10px 0; padding: 8px; width: 100%;
+      max-width: 500px; border: 1px solid #ccc; border-radius: 5px;
+    }
+    .token-display { font-size: 2em; color: #00cc99; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard Admin CBT Musholla Nurul Ikhwan</h1>
+
+  <section>
+    <h2>Token Aktif (Otomatis Setiap 10 Menit)</h2>
+    <div class="token-display" id="tokenNow">Memuat...</div>
+  </section>
+
+  <section>
+    <h2>Atur Waktu Ujian</h2>
+    <label>Jam Mulai:</label>
+    <input type="datetime-local" id="jamMulai" />
+    <label>Jam Selesai:</label>
+    <input type="datetime-local" id="jamSelesai" />
+    <button onclick="simpanWaktu()">Simpan Waktu Ujian</button>
+  </section>
+
+  <section>
+    <h2>Tambah Soal</h2>
+    <form onsubmit="event.preventDefault(); tambahSoal();">
+      <input type="number" id="nomor" placeholder="Nomor Soal" required />
+      <textarea id="pertanyaan" placeholder="Pertanyaan" required></textarea>
+      <input type="text" id="opsiA" placeholder="Opsi A" required />
+      <input type="text" id="opsiB" placeholder="Opsi B" required />
+      <input type="text" id="opsiC" placeholder="Opsi C" required />
+      <input type="text" id="opsiD" placeholder="Opsi D" required />
+      <select id="kunci" required>
+        <option value="">Pilih Kunci Jawaban</option>
+        <option value="A">A</option><option value="B">B</option>
+        <option value="C">C</option><option value="D">D</option>
+      </select>
+      <button type="submit">Tambah Soal</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Tambah Akun Peserta</h2>
+    <form onsubmit="event.preventDefault(); tambahAkun();">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Tambah Akun</button>
+    </form>
+    <h3>Daftar Akun:</h3>
+    <ul id="list-akun">Memuat...</ul>
+  </section>
+
+  <section>
+    <h2>Nilai Peserta</h2>
+    <div id="nilai-peserta">Belum tersedia. Fitur koreksi otomatis akan ditambahkan.</div>
+  </section>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+      authDomain: "cbt-musholla.firebaseapp.com",
+      projectId: "cbt-musholla",
+      storageBucket: "cbt-musholla.firebasestorage.app",
+      messagingSenderId: "1012621765788",
+      appId: "1:1012621765788:web:86ef7078db1811847d1159"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    function updateToken() {
+      const waktu = Math.floor(Date.now() / 600000);
+      const token = btoa("IKHWAN" + waktu).substring(0, 6).toUpperCase();
+      document.getElementById("tokenNow").textContent = token;
+    }
+    setInterval(updateToken, 10000);
+    updateToken();
+
+    async function simpanWaktu() {
+      const mulai = document.getElementById("jamMulai").value;
+      const selesai = document.getElementById("jamSelesai").value;
+      await setDoc(doc(db, "pengaturan", "waktuUjian"), { mulai, selesai });
+      alert("Waktu ujian berhasil disimpan!");
+    }
+
+    async function tambahSoal() {
+      const data = {
+        nomor: Number(document.getElementById("nomor").value),
+        pertanyaan: document.getElementById("pertanyaan").value,
+        opsi: {
+          A: document.getElementById("opsiA").value,
+          B: document.getElementById("opsiB").value,
+          C: document.getElementById("opsiC").value,
+          D: document.getElementById("opsiD").value
+        },
+        kunci: document.getElementById("kunci").value
+      };
+      await addDoc(collection(db, "soal"), data);
+      alert("Soal berhasil ditambahkan!");
+    }
+
+    async function tambahAkun() {
+      const data = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value
+      };
+      await addDoc(collection(db, "akun"), data);
+      alert("Akun berhasil ditambahkan!");
+      tampilkanAkun();
+    }
+
+    async function tampilkanAkun() {
+      const snap = await getDocs(collection(db, "akun"));
+      let html = "";
+      snap.forEach(doc => {
+        const d = doc.data();
+        html += `<li><b>${d.username}</b></li>`;
+      });
+      document.getElementById("list-akun").innerHTML = html;
+    }
+    tampilkanAkun();
+  </script>
+</body>
+</html>
