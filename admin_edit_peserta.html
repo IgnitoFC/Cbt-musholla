@@ -1,0 +1,76 @@
+04.24 13.15
+admin_edit_peserta.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - Edit Akun Peserta</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 20px; }
+    section { background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, textarea, select, button {
+      display: block; width: 100%; margin: 10px 0; padding: 10px; border-radius: 5px;
+      border: 1px solid #ccc; max-width: 500px;
+    }
+    .akun-box { border-bottom: 1px solid #ccc; margin-bottom: 10px; padding-bottom: 10px; }
+    .edit-btn { background: #007bff; color: white; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard Admin - Edit Data Peserta</h1>
+
+  <section>
+    <h2>Daftar Peserta</h2>
+    <div id="listAkun">Memuat akun...</div>
+  </section>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+      authDomain: "cbt-musholla.firebaseapp.com",
+      projectId: "cbt-musholla",
+      storageBucket: "cbt-musholla.firebasestorage.app",
+      messagingSenderId: "1012621765788",
+      appId: "1:1012621765788:web:86ef7078db1811847d1159"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function loadAkun() {
+      db.collection("akun").get().then(snap => {
+        let html = "";
+        snap.forEach(doc => {
+          const data = doc.data();
+          html += `
+            <div class="akun-box">
+              <input type="text" id="nama-${doc.id}" value="${data.nama || ''}" placeholder="Nama Lengkap"/>
+              <input type="text" id="username-${doc.id}" value="${data.username}" placeholder="Username"/>
+              <input type="text" id="password-${doc.id}" value="${data.password}" placeholder="Password"/>
+              <button class="edit-btn" onclick="simpan('${doc.id}')">Simpan Perubahan</button>
+            </div>
+          `;
+        });
+        document.getElementById("listAkun").innerHTML = html;
+      });
+    }
+
+    function simpan(id) {
+      const nama = document.getElementById("nama-" + id).value;
+      const username = document.getElementById("username-" + id).value;
+      const password = document.getElementById("password-" + id).value;
+
+      db.collection("akun").doc(id).set({
+        nama, username, password
+      }).then(() => {
+        alert("Data peserta berhasil disimpan!");
+        loadAkun();
+      });
+    }
+
+    loadAkun();
+  </script>
+</body>
+</html>
