@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Token Aktif - Admin CBT</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #111; color: white; }
+    .box {
+      background: #222;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffcc;
+      display: inline-block;
+    }
+    .token { font-size: 3em; margin-top: 20px; color: #00ffcc; }
+    .timer { font-size: 1em; margin-top: 10px; color: #ccc; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Token Aktif CBT</h1>
+    <div class="token" id="tokenNow">Memuat...</div>
+    <div class="timer" id="waktuSisa">Sisa waktu: ...</div>
+    <p>Token ini otomatis berubah setiap 10 menit</p>
+  </div>
+  <script>
+    function getTokenTime() {
+      const now = Date.now();
+      const periode = Math.floor(now / 600000);
+      const next = (periode + 1) * 600000;
+      return {
+        token: btoa("IKHWAN" + periode).substring(0, 6).toUpperCase(),
+        sisaMs: next - now
+      };
+    }
+
+    function updateToken() {
+      const { token, sisaMs } = getTokenTime();
+      document.getElementById("tokenNow").textContent = token;
+
+      const menit = Math.floor(sisaMs / 60000);
+      const detik = Math.floor((sisaMs % 60000) / 1000);
+      document.getElementById("waktuSisa").textContent = `Sisa waktu: ${menit} menit ${detik} detik`;
+    }
+
+    updateToken();
+    setInterval(updateToken, 1000);
+  </script>
+</body>
+</html>
