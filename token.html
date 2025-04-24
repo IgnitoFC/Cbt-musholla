@@ -1,0 +1,61 @@
+04.24 21.58
+token.html
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Ujian</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #141414; color: white; text-align: center; padding: 40px; }
+    .box {
+      background: #1e1e1e; padding: 30px; border-radius: 10px; max-width: 400px; margin: auto;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+    input, button {
+      width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px;
+      font-size: 16px; border: none;
+    }
+    input { background: #f5f5f5; color: black; }
+    button { background: #007bff; color: white; cursor: pointer; }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Masukkan Token</h2>
+    <p id="namaUser"></p>
+    <input type="text" id="tokenInput" placeholder="Masukkan Token" />
+    <button onclick="verifikasiToken()">Verifikasi</button>
+    <p id="pesan" style="color: red;"></p>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+      authDomain: "cbt-musholla.firebaseapp.com",
+      projectId: "cbt-musholla",
+      storageBucket: "cbt-musholla.appspot.com",
+      messagingSenderId: "1012621765788",
+      appId: "1:1012621765788:web:86ef7078db1811847d1159"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const user = localStorage.getItem("cbt_user");
+    const mapel = localStorage.getItem("cbt_mapel");
+    document.getElementById("namaUser").innerText = `Peserta: ${user} | Mapel: ${mapel}`;
+
+    function verifikasiToken() {
+      const inputToken = document.getElementById("tokenInput").value.trim();
+      const pesan = document.getElementById("pesan");
+      if (!inputToken) return pesan.textContent = "Token wajib diisi!";
+      db.collection("pengaturan_" + mapel).doc("token").get().then(doc => {
+        if (doc.exists && doc.data().token === inputToken) {
+          window.location.href = "cbt.html";
+        } else {
+          pesan.textContent = "Token salah atau tidak valid!";
+        }
+      });
+    }
+  </script></body>
+</html>
