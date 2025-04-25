@@ -1,0 +1,76 @@
+04.25 10.51
+token.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Validasi Token CBT</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to top right, #004080, #3399ff);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .token-box {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      width: 300px;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    input {
+      background: white;
+      color: black;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #218838;
+    }
+    #info {
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class="token-box">
+    <h2>Masukkan Token</h2>
+    <input type="text" id="token" placeholder="Token dari panitia">
+    <button onclick="cekToken()">Lanjut</button>
+    <div id="info"></div>
+  </div>
+
+  <script>
+    const tokenAktif = "NURUL2025"; // Bisa disinkronkan ke Firebase nanti
+
+    function cekToken() {
+      const input = document.getElementById("token").value.trim();
+      if (input === tokenAktif) {
+        window.location.href = "cbt.html";
+      } else {
+        document.getElementById("info").innerText = "Token salah. Coba lagi.";
+      }
+    }
+  </script>
+</body>
+</html>
