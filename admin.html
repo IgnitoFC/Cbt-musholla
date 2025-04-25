@@ -1,0 +1,131 @@
+04.25 10.38
+admin.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - CBT</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f4f4; color: #333; }
+    header { background: #00264d; color: white; padding: 15px; text-align: center; }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      background: #e0e0e0;
+      padding: 10px;
+    }
+    nav button {
+      background: #004080;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    section {
+      display: none;
+      padding: 20px;
+      background: white;
+      max-width: 900px;
+      margin: auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+    section.active { display: block; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    label { font-weight: bold; display: block; margin-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    .btn-red { background: crimson; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Admin Panel - CBT Nurul Ikhwan</h2>
+  </header>
+
+  <nav>
+    <button onclick="showTab('mapel')">Kelola Mapel</button>
+    <button onclick="showTab('soal')">Kelola Soal</button>
+    <button onclick="showTab('akun')">Akun Peserta</button>
+    <button onclick="showTab('token')">Token & Waktu</button>
+    <button onclick="showTab('nilai')">Lihat Nilai</button>
+  </nav>
+
+  <section id="mapel">
+    <h3>Kelola Mapel</h3>
+    <label>Nama Mapel Baru:</label>
+    <input type="text" id="mapelBaru" placeholder="Contoh: PAI">
+    <button onclick="tambahMapel()">Tambah Mapel</button>
+    <ul id="daftarMapel"></ul>
+  </section>
+
+  <section id="soal">
+    <h3>Kelola Soal</h3>
+    <p>Fitur kelola soal akan tampil di sini: tambah, edit, hapus, upload gambar</p>
+  </section>
+
+  <section id="akun">
+    <h3>Akun Peserta</h3>
+    <label>Username:</label>
+    <input type="text" placeholder="Username">
+    <label>Password:</label>
+    <input type="text" placeholder="Password">
+    <button>Tambah Akun</button>
+    <table>
+      <thead><tr><th>Username</th><th>Password</th><th>Aksi</th></tr></thead>
+      <tbody><tr><td>peserta01</td><td>rahasia</td><td><button class="btn-red">Hapus</button></td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="token">
+    <h3>Token & Waktu</h3>
+    <label>Token Saat Ini:</label>
+    <input type="text" value="NURUL2025">
+    <label>Durasi Ujian (menit):</label>
+    <input type="number" value="30">
+    <button>Simpan Pengaturan</button>
+  </section>
+
+  <section id="nilai">
+    <h3>Nilai Peserta</h3>
+    <p>Daftar nilai peserta dari berbagai mapel akan tampil di sini.</p>
+  </section>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function tambahMapel() {
+      const mapelInput = document.getElementById("mapelBaru");
+      const nama = mapelInput.value.trim();
+      if (nama !== "") {
+        const ul = document.getElementById("daftarMapel");
+        const li = document.createElement("li");
+        li.innerText = nama;
+        ul.appendChild(li);
+        mapelInput.value = "";
+      }
+    }
+
+    // Default tab
+    showTab('mapel');
+  </script>
+</body>
+</html>

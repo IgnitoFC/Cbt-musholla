@@ -1,0 +1,182 @@
+04.25 10.37
+cbt.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CBT | Musholla Nurul Ikhwan</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f4f7fa;
+      color: #333;
+    }
+    header {
+      background: #00264d;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-left { display: flex; flex-direction: column; }
+    #timer { font-weight: bold; font-size: 1.1em; }
+    .container { max-width: 800px; margin: auto; padding: 20px; }
+    .question-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .options label {
+      display: block;
+      background: #f2f2f2;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .options input[type="radio"] { margin-right: 10px; }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .navigation button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #004080;
+      color: white;
+    }
+    #submitBtn {
+      width: 100%;
+      margin-top: 30px;
+      padding: 12px;
+      background: crimson;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    img.soal-img {
+      max-width: 100%;
+      margin: 15px 0;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div><strong>CBT Musholla Nurul Ikhwan</strong></div>
+      <div id="mapel">Mapel: -</div>
+    </div>
+    <div id="timer">00:00</div>
+  </header>
+
+  <div class="container">
+    <div id="questionContainer" class="question-card"></div>
+    <div class="navigation">
+      <button onclick="prevQuestion()">Sebelumnya</button>
+      <button onclick="nextQuestion()">Selanjutnya</button>
+    </div>
+    <button id="submitBtn" onclick="submitJawaban()">Kumpulkan Jawaban</button>
+  </div>
+
+  <script>
+    let current = 0;
+    let questions = [];
+    let jawaban = {};
+    const mapel = localStorage.getItem("cbt_mapel") || "PAI";
+
+    document.getElementById("mapel").textContent = "Mapel: " + mapel;
+
+    const sampleQuestions = [
+      {
+        nomor: 1,
+        pertanyaan: "Siapa nama nabi terakhir?",
+        gambar: "",
+        opsi: { A: "Nabi Musa", B: "Nabi Isa", C: "Nabi Muhammad", D: "Nabi Nuh" },
+        tipe: "pg",
+        kunci: "C"
+      },
+      {
+        nomor: 2,
+        pertanyaan: "Rukun Islam ke-1 adalah ...",
+        gambar: "",
+        opsi: { A: "Salat", B: "Puasa", C: "Zakat", D: "Syahadat" },
+        tipe: "pg",
+        kunci: "D"
+      },
+      {
+        nomor: 3,
+        pertanyaan: "Gambar berikut menunjukkan ...",
+        gambar: "https://via.placeholder.com/400x200.png?text=Masjid",
+        opsi: { A: "Masjid", B: "Gereja", C: "Vihara", D: "Pura" },
+        tipe: "pg",
+        kunci: "A"
+      }
+    ];
+
+    function tampilSoal(index) {
+      const q = questions[index];
+      let html = `<h3>Soal ${q.nomor}</h3>`;
+      html += `<p>${q.pertanyaan}</p>`;
+      if (q.gambar) html += `<img class="soal-img" src="${q.gambar}" alt="Gambar soal">`;
+      html += `<div class="options">`;
+      for (let key in q.opsi) {
+        const checked = (jawaban[q.nomor] === key) ? "checked" : "";
+        html += `<label><input type="radio" name="opsi" value="${key}" ${checked}
+          onchange="simpanJawaban(${q.nomor}, '${key}')"> ${key}. ${q.opsi[key]}</label>`;
+      }
+      html += `</div>`;
+      document.getElementById("questionContainer").innerHTML = html;
+    }
+
+    function simpanJawaban(nomor, opsi) {
+      jawaban[nomor] = opsi;
+      localStorage.setItem("jawaban_" + mapel, JSON.stringify(jawaban));
+    }
+
+    function prevQuestion() {
+      if (current > 0) { current--; tampilSoal(current); }
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) { current++; tampilSoal(current); }
+    }
+
+    function submitJawaban() {
+      if (!confirm("Yakin ingin mengumpulkan jawaban?")) return;
+      localStorage.setItem("submitted_" + mapel, "yes");
+      alert("Jawaban telah dikumpulkan!");
+      window.location.href = "selesai.html";
+    }
+
+    function mulai() {
+      if (localStorage.getItem("submitted_" + mapel) === "yes") {
+        window.location.href = "selesai.html"; return;
+      }
+      questions = sampleQuestions;
+      const saved = JSON.parse(localStorage.getItem("jawaban_" + mapel) || "{}");
+      jawaban = saved;
+      tampilSoal(current);
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        alert("Keluar layar terdeteksi. Logout otomatis.");
+        window.location.href = "login.html";
+      }
+    });
+
+    mulai();
+  </script>
+</body>
+</html>
