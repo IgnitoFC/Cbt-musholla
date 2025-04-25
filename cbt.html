@@ -1,0 +1,144 @@
+04.25 08.48
+cbt.html
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CBT Musholla Nurul Ikhwan</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #f1f1f1; user-select: none; }
+    header {
+      background: #0066cc;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      position: relative;
+    }
+    #daftarSoalToggle {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      padding: 6px 12px;
+      border: none;
+      background: yellow;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #logoutBtn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    #timer { margin-top: 5px; }
+    #soalBox {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+    }
+    #daftarSoal {
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 10px;
+      gap: 6px;
+      transition: 0.3s ease-in-out;
+    }
+    .soal-btn {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .belum { background: white; }
+    .terjawab { background: green; color: white; }
+  </style>
+</head>
+<body>
+  <header>
+    <button id="daftarSoalToggle" onclick="toggleDaftarSoal()">DAFTAR SOAL</button>
+    <h2>UJIAN CBT</h2>
+    <p id="timer">00:00</p>
+    <button id="logoutBtn" onclick="logout()">LOGOUT</button>
+  </header>
+  <div id="daftarSoal"></div>
+  <div id="soalBox"></div>  <script>
+    const soalBox = document.getElementById("soalBox");
+    const daftarSoal = document.getElementById("daftarSoal");
+
+    let jumlahSoal = 10;
+    let jawaban = Array(jumlahSoal).fill("");
+
+    function toggleDaftarSoal() {
+      daftarSoal.style.display = daftarSoal.style.display === "none" ? "flex" : "none";
+    }
+
+    function tampilSoal() {
+      soalBox.innerHTML = "";
+      daftarSoal.innerHTML = "";
+      for (let i = 0; i < jumlahSoal; i++) {
+        const div = document.createElement("div");
+        div.innerHTML = `<p><b>Soal ${i + 1}</b>: Ini pertanyaan ke-${i + 1}<br>
+        <input type='radio' name='q${i}' value='A' onchange='jawab(${i}, "A")'> A
+        <input type='radio' name='q${i}' value='B' onchange='jawab(${i}, "B")'> B</p>`;
+        soalBox.appendChild(div);
+
+        const btn = document.createElement("button");
+        btn.textContent = i + 1;
+        btn.className = "soal-btn " + (jawaban[i] ? "terjawab" : "belum");
+        btn.onclick = () => scrollToSoal(i);
+        daftarSoal.appendChild(btn);
+      }
+    }
+
+    function jawab(i, val) {
+      jawaban[i] = val;
+      tampilSoal();
+    }
+
+    function scrollToSoal(i) {
+      const y = soalBox.children[i].offsetTop;
+      window.scrollTo({ top: y - 60, behavior: "smooth" });
+    }
+
+    function logout() {
+      alert("Logout berhasil!");
+      window.location.href = "login.html";
+    }
+
+    // Anti tekan lama (long press / context menu)
+    document.addEventListener("contextmenu", e => {
+      alert("Aksi tidak diizinkan (deteksi mencontek)");
+      window.location.href = "login.html";
+      e.preventDefault();
+    });
+
+    let touchTimer;
+    document.addEventListener("touchstart", () => {
+      touchTimer = setTimeout(() => {
+        alert("Mencontek terdeteksi!");
+        window.location.href = "login.html";
+      }, 800);
+    });
+    document.addEventListener("touchend", () => clearTimeout(touchTimer));
+
+    // Anti keluar layar/tab
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        alert("Keluar dari layar terdeteksi. Anda telah logout.");
+        window.location.href = "login.html";
+      }
+    });
+
+    tampilSoal();
+  </script></body>
+</html>

@@ -1,0 +1,38 @@
+04.25 08.46
+login.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login CBT</title>
+  <style>
+    body { font-family: sans-serif; background: #222; color: white; text-align: center; padding: 40px; }
+    .login-box { background: #333; padding: 30px; border-radius: 10px; display: inline-block; }
+    input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Login CBT</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Masuk</button>
+    <p id="message" style="color: red;"></p>
+  </div>
+
+  <script>
+    const akun = { username: "peserta01", password: "ujian123" };
+    function login() {
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
+      if (u === akun.username && p === akun.password) {
+        sessionStorage.setItem("user", u);
+        window.location.href = "token.html";
+      } else {
+        document.getElementById("message").innerText = "Username atau password salah.";
+      }
+    }
+  </script>
+</body>
+</html>
