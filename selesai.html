@@ -1,0 +1,56 @@
+04.25 13.53
+selesai.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ujian Selesai</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #00264d, #0080ff);
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .box {
+      background: rgba(255,255,255,0.1);
+      padding: 40px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    h2 { margin-bottom: 10px; }
+    p { font-size: 1.1em; margin: 10px 0; }
+    button {
+      background: crimson;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: white;
+      font-size: 1em;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover { background: darkred; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Terima kasih!</h2>
+    <p>Jawabanmu telah terkirim dan ujian kamu telah selesai.</p>
+    <p>Kamu tidak bisa mengakses kembali mapel ini.</p>
+    <button onclick="logout()">Keluar</button>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("cbt_user");
+      localStorage.removeItem("cbt_mapel");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
