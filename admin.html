@@ -1,0 +1,166 @@
+04.29 08.51
+admin.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin CBT</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f9f9f9; margin: 0; }
+    header { background: #00264d; color: white; text-align: center; padding: 20px; }
+    nav { background: #004080; padding: 10px; text-align: center; }
+    nav button { margin: 5px; background: #007bff; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+    section { padding: 20px; display: none; max-width: 900px; margin: auto; }
+    section.active { display: block; }
+    input, textarea, select, button { width: 100%; margin-top: 10px; margin-bottom: 20px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    .hapus-btn { background: crimson; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+    #tokenUpdate { display: flex; gap: 10px; }
+  </style>
+</head>
+<body>
+
+<header>Dashboard Admin CBT</header>
+<nav>
+  <button onclick="show('mapel')">Mapel</button>
+  <button onclick="show('soal')">Soal</button>
+  <button onclick="show('akun')">Akun Peserta</button>
+  <button onclick="show('pengaturan')">Pengaturan Token & Waktu</button>
+  <button onclick="show('nilai')">Nilai Peserta</button>
+</nav>
+
+<section id="mapel">
+  <h2>Manajemen Mapel</h2>
+  <input type="text" id="mapelInput" placeholder="Nama Mapel (contoh: PAI)" />
+  <button onclick="tambahMapel()">Tambah Mapel</button>
+  <ul id="listMapel"></ul>
+</section>
+
+<section id="soal">
+  <h2>Manajemen Soal</h2>
+  <select id="mapelSelect"></select>
+  <textarea id="pertanyaan" placeholder="Tulis Pertanyaan"></textarea>
+  <input id="gambar" placeholder="URL Gambar (opsional)">
+  <input id="opsiA" placeholder="Opsi A">
+  <input id="opsiB" placeholder="Opsi B">
+  <input id="opsiC" placeholder="Opsi C">
+  <input id="opsiD" placeholder="Opsi D">
+  <input id="kunci" placeholder="Kunci Jawaban (A/B/C/D)">
+  <button onclick="tambahSoal()">Tambah Soal</button>
+  <div id="listSoal"></div>
+</section>
+
+<section id="akun">
+  <h2>Manajemen Akun Peserta</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" placeholder="Password">
+  <select id="mapelAkun"></select>
+  <button onclick="tambahAkun()">Tambah Akun</button>
+  <table id="akunTable"><thead><tr><th>Username</th><th>Password</th><th>Mapel</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+</section>
+
+<section id="pengaturan">
+  <h2>Pengaturan Token & Waktu</h2>
+  <input id="tokenBaru" placeholder="Token Baru">
+  <input type="number" id="durasi" placeholder="Durasi Ujian (menit)">
+  <button onclick="simpanPengaturan()">Simpan Pengaturan</button>
+</section>
+
+<section id="nilai">
+  <h2>Nilai Peserta</h2>
+  <button onclick="downloadCSV()">Download CSV</button>
+  <table id="nilaiTable"><thead><tr><th>Username</th><th>Mapel</th><th>Skor</th><th>Benar/Total</th><th>Waktu</th></tr></thead><tbody></tbody></table>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+// Firebase Init
+const firebaseConfig = {
+  apiKey: "AIzaSyC-PGsyOliTaj-unpWwuB3cb9N11Gcpl7M",
+  authDomain: "cbt-musholla.firebaseapp.com",
+  projectId: "cbt-musholla",
+  storageBucket: "cbt-musholla.appspot.com",
+  messagingSenderId: "1012621765788",
+  appId: "1:1012621765788:web:86ef7078db1811847d1159"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Nav Switch
+function show(id) {
+  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+show('mapel');
+
+// Tambah Mapel
+function tambahMapel() {
+  const mapel = document.getElementById("mapelInput").value.trim();
+  if (mapel) {
+    db.collection("mapel").doc(mapel).set({ dibuat: new Date().toISOString() });
+    alert("Mapel ditambahkan!");
+  }
+}
+
+// Tambah Soal
+function tambahSoal() {
+  const soal = {
+    mapel: document.getElementById("mapelSelect").value,
+    pertanyaan: document.getElementById("pertanyaan").value,
+    gambar: document.getElementById("gambar").value,
+    opsi: {
+      A: document.getElementById("opsiA").value,
+      B: document.getElementById("opsiB").value,
+      C: document.getElementById("opsiC").value,
+      D: document.getElementById("opsiD").value,
+    },
+    kunci: document.getElementById("kunci").value
+  };
+  db.collection("soal").add(soal);
+  alert("Soal ditambahkan!");
+}
+
+// Tambah Akun
+function tambahAkun() {
+  const akun = {
+    username: document.getElementById("username").value,
+    password: document.getElementById("password").value,
+    mapel: document.getElementById("mapelAkun").value
+  };
+  db.collection("akun").add(akun);
+  alert("Akun peserta ditambahkan!");
+}
+
+// Simpan Token dan Durasi
+function simpanPengaturan() {
+  db.collection("pengaturan").doc("token").set({
+    aktif: document.getElementById("tokenBaru").value,
+    durasi: parseInt(document.getElementById("durasi").value)
+  });
+  alert("Token dan Durasi disimpan!");
+}
+
+// Download Nilai CSV
+function downloadCSV() {
+  db.collection("nilai").get().then(snapshot => {
+    let csv = "Username,Mapel,Skor,Benar,Total,Waktu\n";
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      csv += `${d.user},${d.mapel},${d.skor},${d.benar},${d.total},${d.waktuSelesai}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rekap_nilai.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+</script>
+
+</body>
+</html>

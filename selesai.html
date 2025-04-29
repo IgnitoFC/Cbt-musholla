@@ -1,0 +1,30 @@
+04.29 08.50
+selesai.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ujian Selesai</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #1f1f1f; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; }
+    h1 { color: #28a745; }
+    button { background: crimson; color: white; padding: 10px 20px; font-size: 16px; margin-top: 20px; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { background: darkred; }
+  </style>
+</head>
+<body>
+
+<h1>Terima kasih!</h1>
+<p>Jawaban Anda telah terkirim.</p>
+<button onclick="keluar()">Logout</button>
+
+<script>
+function keluar() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
